@@ -14,68 +14,85 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.vkapplication.domain.PostComment
-import com.example.vkapplication.presentation.MainViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.vkapplication.domain.FeedPost
+import com.example.vkapplication.presentation.NewsFeedViewModel
 import com.example.vkapplication.ui.PostCard
+
+@Composable
+fun HomeScreen(
+    paddingValues: PaddingValues,
+    onCommentClickListener: (FeedPost) -> Unit
+) {
+    val viewModel: NewsFeedViewModel = viewModel()
+
+    val screenState = viewModel.screenState.observeAsState(NewsFeedScreenState.Initial)
+
+    val currentState = screenState.value
+
+    when (currentState) {
+        is NewsFeedScreenState.Posts -> {
+            FeedPosts(
+                viewModel = viewModel,
+                paddingValues = paddingValues,
+                posts = currentState.posts,
+                onCommentClickListener = onCommentClickListener
+            )
+        }
+        NewsFeedScreenState.Initial -> {
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun HomeScreen(
-    viewModel: MainViewModel,
-    paddingValues: PaddingValues
-){
-    val feedPosts = viewModel.feedPosts.observeAsState(listOf())
+private fun FeedPosts(
+    viewModel: NewsFeedViewModel,
+    paddingValues: PaddingValues,
+    posts: List<FeedPost>,
+    onCommentClickListener: (FeedPost) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.padding(paddingValues),
+        contentPadding = PaddingValues(
+            top = 16.dp,
+            start = 8.dp,
+            end = 8.dp,
+            bottom = 72.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(
+            items = posts,
+            key = { it.id }) { feedPost ->
+            val dismissState = rememberDismissState()
 
-    if (feedPosts.value.isNotEmpty()){
-        val comments = mutableListOf<PostComment>().apply {
-            repeat(20){
-                add(
-                    PostComment(id = it)
+            if (dismissState.isDismissed(DismissDirection.EndToStart)) {
+                viewModel.delete(feedPost)
+            }
+            SwipeToDismiss(
+                modifier = Modifier.animateItemPlacement(),
+                state = dismissState,
+                background = {},
+                directions = setOf(DismissDirection.EndToStart)
+            ) {
+                PostCard(
+                    feedPost = feedPost,
+
+                    onViewsClickListener = { statisticItem ->
+                        viewModel.updateCount(feedPost, statisticItem)
+                    },
+                    onShareClickListener = { statisticItem ->
+                        viewModel.updateCount(feedPost, statisticItem)
+                    },
+                    onCommentClickListener = {
+                        onCommentClickListener(feedPost)
+                    },
+                    onLikeClickListener = { statisticItem ->
+                        viewModel.updateCount(feedPost, statisticItem)
+                    },
                 )
             }
         }
-        CommentsScreen(feedPost = feedPosts.value.get(0), comments = comments)
     }
-
-//    LazyColumn(
-//        modifier = Modifier.padding(paddingValues),
-//        contentPadding = PaddingValues(
-//            top = 16.dp,
-//            start = 8.dp,
-//            end = 8.dp,
-//            bottom = 72.dp
-//        ),
-//        verticalArrangement = Arrangement.spacedBy(8.dp)
-//    ) {
-//        items(items = feedPosts.value, key = { it.id }) { feedPost ->
-//            val dismissState = rememberDismissState()
-//
-//            if (dismissState.isDismissed(DismissDirection.EndToStart)) {
-//                viewModel.delete(feedPost)
-//            }
-//            SwipeToDismiss(
-//                modifier = Modifier.animateItemPlacement(),
-//                state = dismissState,
-//                background = {},
-//                directions = setOf(DismissDirection.EndToStart)
-//            ) {
-//                PostCard(
-//                    feedPost = feedPost,
-//
-//                    onViewsClickListener = { statisticItem ->
-//                        viewModel.updateCount(feedPost, statisticItem)
-//                    },
-//                    onShareClickListener = { statisticItem ->
-//                        viewModel.updateCount(feedPost, statisticItem)
-//                    },
-//                    onCommentClickListener = { statisticItem ->
-//                        viewModel.updateCount(feedPost, statisticItem)
-//                    },
-//                    onLikeClickListener = { statisticItem ->
-//                        viewModel.updateCount(feedPost, statisticItem)
-//                    },
-//                )
-//            }
-//        }
-//    }
 }
