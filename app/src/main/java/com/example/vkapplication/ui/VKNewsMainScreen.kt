@@ -1,45 +1,44 @@
 package com.example.vkapplication.ui
 
-import android.annotation.SuppressLint
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.clickable
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.DismissDirection
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.Text
-import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import com.example.vkapplication.domain.FeedPost
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.example.vkapplication.navigation.AppNavGraph
+import com.example.vkapplication.navigation.NavigationState
+import com.example.vkapplication.navigation.Screen
+import com.example.vkapplication.navigation.rememberNavigationState
 import com.example.vkapplication.presentation.MainViewModel
 import com.example.vkapplication.ui.theme.HomeScreen
 
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(
     viewModel: MainViewModel,
 ) {
-    val selectedNavItem by viewModel.selectedNavItem.observeAsState(NavigationItem.Home)
+
+    val navigationState = rememberNavigationState()
+
     Scaffold(
         bottomBar = {
-            BottomNavigation() {
+            BottomNavigation {
+                val navBackStackEntry by navigationState.navHostController.currentBackStackEntryAsState()
+                val currentRout = navBackStackEntry?.destination?.route
 
                 val items = listOf(
                     NavigationItem.Home,
@@ -48,8 +47,8 @@ fun MainScreen(
                 )
                 items.forEach { item ->
                     BottomNavigationItem(
-                        selected = selectedNavItem == item,
-                        onClick = { viewModel.selectNavItem(item) },
+                        selected = currentRout == item.screen.route,
+                        onClick = { navigationState.navigateTo(item.screen.route) },
                         icon = { Icon(item.icon, contentDescription = null) },
                         label = {
                             Text(text = stringResource(id = item.titleResId))
@@ -61,14 +60,29 @@ fun MainScreen(
             }
         }
     ) { paddingValues ->
-        when (selectedNavItem) {
-            NavigationItem.Home -> {
-                HomeScreen(viewModel = viewModel, paddingValues = paddingValues)
-            }
-            NavigationItem.Favourite -> Text(text = "Favourite", color = Color.Black)
-            NavigationItem.Profile -> Text(text = "Profile", color = Color.Black)
-        }
+        AppNavGraph(
+            navHostController = navigationState.navHostController,
+            homeScreenContent = {
+                HomeScreen(
+                    viewModel = viewModel,
+                    paddingValues = paddingValues
+                )
+            },
+            favoriteScreenContent = { TextCounter(name = "Favorite") },
+            profileScreenContent = { TextCounter(name = "Profile") }
+        )
     }
 }
 
+@Composable
+private fun TextCounter(name: String) {
+    var count by rememberSaveable {
+        mutableStateOf(0)
+    }
+    Text(
+        modifier = Modifier.clickable { count++ },
+        text = "$name Count: $count",
+        color = Color.Black
+    )
 
+}
