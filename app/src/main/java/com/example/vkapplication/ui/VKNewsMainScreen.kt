@@ -17,9 +17,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.vkapplication.domain.FeedPost
 import com.example.vkapplication.navigation.AppNavGraph
+import com.example.vkapplication.navigation.Screen
 import com.example.vkapplication.navigation.rememberNavigationState
 import com.example.vkapplication.ui.theme.CommentsScreen
 import com.example.vkapplication.ui.theme.HomeScreen
@@ -29,15 +31,11 @@ import com.example.vkapplication.ui.theme.HomeScreen
 fun MainScreen() {
 
     val navigationState = rememberNavigationState()
-    val commentsToPost: MutableState<FeedPost?> = remember {
-        mutableStateOf(null)
-    }
 
     Scaffold(
         bottomBar = {
             BottomNavigation {
                 val navBackStackEntry by navigationState.navHostController.currentBackStackEntryAsState()
-                val currentRout = navBackStackEntry?.destination?.route
 
                 val items = listOf(
                     NavigationItem.Home,
@@ -45,9 +43,18 @@ fun MainScreen() {
                     NavigationItem.Profile
                 )
                 items.forEach { item ->
+
+                    val selected = navBackStackEntry?.destination?.hierarchy?.any {
+                        it.route == item.screen.route
+                    } ?: false
+
                     BottomNavigationItem(
-                        selected = currentRout == item.screen.route,
-                        onClick = { navigationState.navigateTo(item.screen.route) },
+                        selected = selected,
+                        onClick = {
+                            if (!selected) {
+                                navigationState.navigateTo(item.screen.route)
+                            }
+                        },
                         icon = { Icon(item.icon, contentDescription = null) },
                         label = {
                             Text(text = stringResource(id = item.titleResId))
@@ -61,22 +68,21 @@ fun MainScreen() {
     ) { paddingValues ->
         AppNavGraph(
             navHostController = navigationState.navHostController,
-            homeScreenContent = {
-                if (commentsToPost.value == null) {
-                    HomeScreen(
-                        paddingValues = paddingValues,
-                        onCommentClickListener = {
-                            commentsToPost.value = it
-                        }
-                    )
-                } else {
-                    CommentsScreen(
-                        onBackPressed = {
-                            commentsToPost.value = null
-                        },
-                        feedPost = commentsToPost.value!!
-                    )
-                }
+            newFeedScreenContent = {
+                HomeScreen(
+                    paddingValues = paddingValues,
+                    onCommentClickListener = {
+                        navigationState.navigateToComments(it)
+                    }
+                )
+            },
+            commentsScreenContent = {feedPost ->
+                CommentsScreen(
+                    onBackPressed = {
+                        navigationState.navHostController.popBackStack()
+                    },
+                    feedPost = feedPost
+                )
             },
             favoriteScreenContent = { TextCounter(name = "Favorite") },
             profileScreenContent = { TextCounter(name = "Profile") }
