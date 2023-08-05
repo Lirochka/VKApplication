@@ -1,4 +1,4 @@
-package com.example.vkapplication.ui
+package com.example.vkapplication.presentation.news
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

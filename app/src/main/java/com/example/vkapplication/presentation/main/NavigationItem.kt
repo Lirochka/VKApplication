@@ -1,4 +1,4 @@
-package com.example.vkapplication.ui
+package com.example.vkapplication.presentation.main
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite

@@ -1,4 +1,4 @@
-package com.example.vkapplication.ui.theme
+package com.example.vkapplication.presentation.comments
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -30,8 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.vkapplication.domain.FeedPost
 import com.example.vkapplication.domain.PostComment
-import com.example.vkapplication.presentation.CommentsViewModel
-import com.example.vkapplication.presentation.CommentsViewModelFactory
+import com.example.vkapplication.ui.theme.VKApplicationTheme
 
 @Composable
 fun CommentsScreen(
