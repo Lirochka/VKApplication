@@ -23,12 +23,9 @@ fun NewsFeedScreen(
     onCommentClickListener: (FeedPost) -> Unit
 ) {
     val viewModel: NewsFeedViewModel = viewModel()
-
     val screenState = viewModel.screenState.observeAsState(NewsFeedScreenState.Initial)
 
-    val currentState = screenState.value
-
-    when (currentState) {
+    when (val currentState = screenState.value) {
         is NewsFeedScreenState.Posts -> {
             FeedPosts(
                 viewModel = viewModel,
@@ -38,6 +35,7 @@ fun NewsFeedScreen(
             )
         }
         NewsFeedScreenState.Initial -> {
+
         }
     }
 }
@@ -62,12 +60,13 @@ private fun FeedPosts(
     ) {
         items(
             items = posts,
-            key = { it.id }) { feedPost ->
+            key = { it.id }
+        ) { feedPost ->
             val dismissState = rememberDismissState()
-
             if (dismissState.isDismissed(DismissDirection.EndToStart)) {
-                viewModel.delete(feedPost)
+                viewModel.remove(feedPost)
             }
+
             SwipeToDismiss(
                 modifier = Modifier.animateItemPlacement(),
                 state = dismissState,
@@ -76,7 +75,6 @@ private fun FeedPosts(
             ) {
                 PostCard(
                     feedPost = feedPost,
-
                     onViewsClickListener = { statisticItem ->
                         viewModel.updateCount(feedPost, statisticItem)
                     },

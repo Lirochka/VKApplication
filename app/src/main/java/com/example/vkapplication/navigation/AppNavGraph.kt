@@ -10,21 +10,21 @@ import com.example.vkapplication.domain.FeedPost
 @Composable
 fun AppNavGraph(
     navHostController: NavHostController,
-    favoriteScreenContent: @Composable () -> Unit,
+    newsFeedScreenContent: @Composable () -> Unit,
+    favouriteScreenContent: @Composable () -> Unit,
     profileScreenContent: @Composable () -> Unit,
-    newFeedScreenContent: @Composable () -> Unit,
-    commentsScreenContent: @Composable (FeedPost) -> Unit,
+    commentsScreenContent: @Composable (FeedPost) -> Unit
 ) {
     NavHost(
         navController = navHostController,
         startDestination = Screen.Home.route
     ) {
         homeScreenNavGraph(
-            newFeedScreenContent = newFeedScreenContent,
+            newsFeedScreenContent = newsFeedScreenContent,
             commentsScreenContent = commentsScreenContent
         )
         composable(Screen.Favourite.route) {
-            favoriteScreenContent()
+            favouriteScreenContent()
         }
         composable(Screen.Profile.route) {
             profileScreenContent()

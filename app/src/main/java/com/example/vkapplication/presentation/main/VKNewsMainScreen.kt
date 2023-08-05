@@ -25,7 +25,6 @@ import com.example.vkapplication.presentation.news.NewsFeedScreen
 
 @Composable
 fun MainScreen() {
-
     val navigationState = rememberNavigationState()
 
     Scaffold(
@@ -51,7 +50,9 @@ fun MainScreen() {
                                 navigationState.navigateTo(item.screen.route)
                             }
                         },
-                        icon = { Icon(item.icon, contentDescription = null) },
+                        icon = {
+                            Icon(item.icon, contentDescription = null)
+                        },
                         label = {
                             Text(text = stringResource(id = item.titleResId))
                         },
@@ -64,7 +65,7 @@ fun MainScreen() {
     ) { paddingValues ->
         AppNavGraph(
             navHostController = navigationState.navHostController,
-            newFeedScreenContent = {
+            newsFeedScreenContent = {
                 NewsFeedScreen(
                     paddingValues = paddingValues,
                     onCommentClickListener = {
@@ -72,7 +73,7 @@ fun MainScreen() {
                     }
                 )
             },
-            commentsScreenContent = {feedPost ->
+            commentsScreenContent = { feedPost ->
                 CommentsScreen(
                     onBackPressed = {
                         navigationState.navHostController.popBackStack()
@@ -80,7 +81,7 @@ fun MainScreen() {
                     feedPost = feedPost
                 )
             },
-            favoriteScreenContent = { TextCounter(name = "Favorite") },
+            favouriteScreenContent = { TextCounter(name = "Favourite") },
             profileScreenContent = { TextCounter(name = "Profile") }
         )
     }
@@ -91,9 +92,11 @@ private fun TextCounter(name: String) {
     var count by rememberSaveable {
         mutableStateOf(0)
     }
+
     Text(
         modifier = Modifier.clickable { count++ },
         text = "$name Count: $count",
         color = Color.Black
     )
 }
+

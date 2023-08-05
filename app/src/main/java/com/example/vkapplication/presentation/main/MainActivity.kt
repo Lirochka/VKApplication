@@ -11,10 +11,11 @@ import com.vk.api.sdk.VK
 import com.vk.api.sdk.auth.VKScope
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            VKApplicationTheme {
+            VKApplicationTheme() {
                 val viewModel: MainViewModel = viewModel()
                 val authState = viewModel.authState.observeAsState(AuthState.Initial)
 
@@ -23,13 +24,14 @@ class MainActivity : ComponentActivity() {
                 ) {
                     viewModel.performAuthResult(it)
                 }
-                when(authState.value){
+
+                when (authState.value) {
                     is AuthState.Authorized -> {
                         MainScreen()
                     }
                     is AuthState.NotAuthorized -> {
                         LoginScreen {
-                            launcher.launch(listOf(VKScope.WALL))
+                            launcher.launch(listOf(VKScope.WALL, VKScope.FRIENDS))
                         }
                     }
                     else -> {
@@ -40,3 +42,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+

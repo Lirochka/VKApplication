@@ -10,24 +10,26 @@ import com.example.vkapplication.domain.FeedPost
 import com.google.gson.Gson
 
 fun NavGraphBuilder.homeScreenNavGraph(
-    newFeedScreenContent: @Composable () -> Unit,
-    commentsScreenContent: @Composable (FeedPost) -> Unit,
+    newsFeedScreenContent: @Composable () -> Unit,
+    commentsScreenContent: @Composable (FeedPost) -> Unit
 ) {
     navigation(
         startDestination = Screen.NewsFeed.route,
         route = Screen.Home.route
     ) {
         composable(Screen.NewsFeed.route) {
-            newFeedScreenContent()
+            newsFeedScreenContent()
         }
         composable(
             route = Screen.Comments.route,
             arguments = listOf(
                 navArgument(Screen.KEY_FEED_POST) {
                     type = FeedPost.NavigationType
-                })
-        ) {
-            val feedPost = it.arguments?.getParcelable<FeedPost>(Screen.KEY_FEED_POST) ?: throw RuntimeException("Args is null")
+                }
+            )
+        ) { //comments/{feed_post_id}
+            val feedPost = it.arguments?.getParcelable<FeedPost>(Screen.KEY_FEED_POST)
+                ?: throw RuntimeException("Args is null")
             commentsScreenContent(feedPost)
         }
     }
