@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -42,8 +43,14 @@ fun NewsFeedScreen(
                 nextDataIsLoading = currentState.nextDataIsLoading
             )
         }
-        NewsFeedScreenState.Initial -> {
-
+        NewsFeedScreenState.Initial -> {}
+        NewsFeedScreenState.Loading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = DarkBlue)
+            }
         }
     }
 }
@@ -84,12 +91,6 @@ private fun FeedPosts(
             ) {
                 PostCard(
                     feedPost = feedPost,
-                    onViewsClickListener = { statisticItem ->
-                        viewModel.updateCount(feedPost, statisticItem)
-                    },
-                    onShareClickListener = { statisticItem ->
-                        viewModel.updateCount(feedPost, statisticItem)
-                    },
                     onCommentClickListener = {
                         onCommentClickListener(feedPost)
                     },
