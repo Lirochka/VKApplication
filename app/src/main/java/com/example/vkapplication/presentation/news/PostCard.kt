@@ -28,9 +28,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.vkapplication.R
-import com.example.vkapplication.domain.FeedPost
-import com.example.vkapplication.domain.StatisticItem
-import com.example.vkapplication.domain.StatisticType
+import com.example.vkapplication.domain.entity.FeedPost
+import com.example.vkapplication.domain.entity.StatisticItem
+import com.example.vkapplication.domain.entity.StatisticType
 import com.example.vkapplication.ui.theme.DarkRed
 
 @Composable

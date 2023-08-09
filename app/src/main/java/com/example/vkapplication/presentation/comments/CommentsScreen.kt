@@ -23,7 +23,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.vkapplication.R
-import com.example.vkapplication.domain.FeedPost
-import com.example.vkapplication.domain.PostComment
+import com.example.vkapplication.domain.entity.FeedPost
+import com.example.vkapplication.domain.entity.PostComment
 
 @Composable
 fun CommentsScreen(
@@ -48,7 +48,7 @@ fun CommentsScreen(
             LocalContext.current.applicationContext as Application
         )
     )
-    val screenState = viewModel.screenState.observeAsState(CommentsScreenState.Initial)
+    val screenState = viewModel.screenState.collectAsState(CommentsScreenState.Initial)
     val currentState = screenState.value
     if (currentState is CommentsScreenState.Comments) {
         Scaffold(
