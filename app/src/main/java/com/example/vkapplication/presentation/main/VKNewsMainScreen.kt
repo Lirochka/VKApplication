@@ -19,6 +19,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.vkapplication.navigation.AppNavGraph
 import com.example.vkapplication.navigation.rememberNavigationState
+import com.example.vkapplication.presentation.ViewModelFactory
 import com.example.vkapplication.presentation.comments.CommentsScreen
 import com.example.vkapplication.presentation.news.NewsFeedScreen
 

@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.vkapplication.R
+import com.example.vkapplication.presentation.ViewModelFactory
 import com.example.vkapplication.ui.theme.DarkBlue
 
 @Composable

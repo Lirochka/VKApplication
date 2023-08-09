@@ -1,6 +1,5 @@
 package com.example.vkapplication.presentation.comments
 
-import android.app.Application
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,6 +22,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +35,8 @@ import coil.compose.AsyncImage
 import com.example.vkapplication.R
 import com.example.vkapplication.domain.entity.FeedPost
 import com.example.vkapplication.domain.entity.PostComment
+import com.example.vkapplication.presentation.NewsFeedApplication
+import com.example.vkapplication.presentation.getApplicationComponent
 
 @Composable
 fun CommentsScreen(
@@ -42,13 +44,25 @@ fun CommentsScreen(
     feedPost: FeedPost,
 ) {
 
+    val component = getApplicationComponent()
+        .getCommentsScreenComponentFactory()
+        .create(feedPost)
+
     val viewModel: CommentsViewModel = viewModel(
-        factory = CommentsViewModelFactory(
-            feedPost,
-            LocalContext.current.applicationContext as Application
-        )
+        factory = component.getViewModelFactory()
     )
     val screenState = viewModel.screenState.collectAsState(CommentsScreenState.Initial)
+    CommentsScreenContent(
+        onBackPressed = onBackPressed,
+        screenState = screenState
+    )
+}
+
+@Composable
+private fun CommentsScreenContent(
+    onBackPressed: () -> Unit,
+    screenState: State<CommentsScreenState>,
+) {
     val currentState = screenState.value
     if (currentState is CommentsScreenState.Comments) {
         Scaffold(

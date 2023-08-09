@@ -3,6 +3,7 @@ package com.example.vkapplication.data.repository
 import android.app.Application
 import com.example.vkapplication.data.mapper.NewsFeedMapper
 import com.example.vkapplication.data.network.ApiFactory
+import com.example.vkapplication.data.network.ApiService
 import com.example.vkapplication.domain.entity.FeedPost
 import com.example.vkapplication.domain.entity.PostComment
 import com.example.vkapplication.domain.entity.StatisticItem
@@ -12,6 +13,7 @@ import com.example.vkapplication.domain.entity.AuthState
 import com.example.vkapplication.domain.repository.NewsFeedRepository
 import com.vk.api.sdk.VKPreferencesKeyValueStorage
 import com.vk.api.sdk.auth.VKAccessToken
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -23,14 +25,14 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 
-class NewsFeedRepositoryImpl(application: Application): NewsFeedRepository {
+class NewsFeedRepositoryImpl @Inject constructor
+    (  private val apiService: ApiService,
+        private val mapper:NewsFeedMapper,
+        private val storage: VKPreferencesKeyValueStorage
+): NewsFeedRepository {
 
-    private val storage = VKPreferencesKeyValueStorage(application)
     private val token
         get() = VKAccessToken.restore(storage)
-
-    private val apiService = ApiFactory.apiService
-    private val mapper = NewsFeedMapper()
 
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private val nextDataNeededEvents = MutableSharedFlow<Unit>(replay = 1)
